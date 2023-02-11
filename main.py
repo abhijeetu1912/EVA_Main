@@ -63,7 +63,7 @@ class Trainer:
 
 
 class Tester:
-    def __init__(self, model, test_loader, criterion, device, split = 'Test'):
+    def __init__(self, model, test_loader, criterion, device):
         self.model = model
         self.test_loader = test_loader
         self.criterion = criterion
@@ -187,7 +187,7 @@ if __name__ == '__main__':
 
     # intitiate trainer and tester instances
     train = Trainer(model, train_loader, criterion, optimizer, device)
-    test = Tester(model, test_loader, criterion, split = 'Test', device)
+    test = Tester(model, test_loader, criterion, device)
 
     # model training
     for epoch in range(args.epochs):
