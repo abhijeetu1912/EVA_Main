@@ -10,7 +10,7 @@ from torch.optim.lr_scheduler import StepLR, ReduceLROnPlateau, OneCycleLR
 from torchvision import datasets, transforms
 from torch.utils.data import Dataset, DataLoader
 from torchsummary import summary
-from EVA_Main.utils.utils import get_device, Transforms, denormalize_image, show_random_images, get_missclassified_records, show_missclassified_images, show_performance_plots
+from utils.utils import get_device, Transforms, denormalize_image, show_random_images, get_missclassified_records, show_missclassified_images, show_performance_plots
 from models.resnet import ResNet18
 
 
