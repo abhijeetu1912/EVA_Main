@@ -134,15 +134,15 @@ def evaluate(model, data_loader, criterion, device, split = 'Test'):
 
 if __name__ == '__main__':
     parser = ArgumentParser()
-    parser.add_argument('--epochs', default = 20, type = int, description = 'Number of epochs for training')
-    parser.add_argument('--batch_size', default = 16, type = int, description = 'Batch size')
-    parser.add_argument('--optimizer', default = 'SGD', type = int, description = 'Batch size')
-    parser.add_argument('--lr', default = 1e-3, type = float, description = 'Learning rate')
-    parser.add_argument('--momentum', default = 0.9, type = float, description = 'Momentum')
-    parser.add_argument('--lr_scheduler', default = False, type = bool, description = 'If lr scheduler needs to be used')
-    parser.add_argument('--step_size', default = 5, type = int, description = 'Step size for StepLR')
-    parser.add_argument('--augmentation', default = False, type = bool, description = 'If data augmentation will be applied')
-    parser.add_argument('--weight_decay', default = 0.1, type = float, description = 'L2 weight decay for regularization')
+    parser.add_argument('--epochs', default = 20, type = int, help = 'Number of epochs for training')
+    parser.add_argument('--batch_size', default = 16, type = int, help = 'Batch size')
+    parser.add_argument('--optimizer', default = 'SGD', type = int, help = 'Batch size')
+    parser.add_argument('--lr', default = 1e-3, type = float, help = 'Learning rate')
+    parser.add_argument('--momentum', default = 0.9, type = float, help = 'Momentum')
+    parser.add_argument('--lr_scheduler', default = False, type = bool, help = 'If lr scheduler needs to be used')
+    parser.add_argument('--step_size', default = 5, type = int, help = 'Step size for StepLR')
+    parser.add_argument('--augmentation', default = False, type = bool, help = 'If data augmentation will be applied')
+    parser.add_argument('--weight_decay', default = 0.1, type = float, help = 'L2 weight decay for regularization')
 
     try:
         args = parser.parse_args()
