@@ -124,7 +124,7 @@ def evaluate(model, data_loader, criterion, device, split = 'Test'):
             # update number of correctly classified ata points
             correct += pred.eq(target.view_as(pred)).sum().item()
         # average loss
-        loss = batch_loss / len(data_loader.dataset))
+        loss = batch_loss / len(data_loader.dataset)
         # accuracy
         accuracy = 100 * correct / len(data_loader.dataset)
         # print epoch statistics
