@@ -136,7 +136,7 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--epochs', default = 20, type = int, help = 'Number of epochs for training')
     parser.add_argument('--batch_size', default = 16, type = int, help = 'Batch size')
-    parser.add_argument('--optimizer', default = 'SGD', type = int, help = 'Batch size')
+    parser.add_argument('--optimizer', default = 'SGD', type = str, help = 'Batch size')
     parser.add_argument('--lr', default = 1e-3, type = float, help = 'Learning rate')
     parser.add_argument('--momentum', default = 0.9, type = float, help = 'Momentum')
     parser.add_argument('--lr_scheduler', default = False, type = bool, help = 'If lr scheduler needs to be used')
