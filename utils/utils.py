@@ -21,7 +21,7 @@ class Transforms:
     Padding of 4 -> Random crop of size 32*32
     Cut out of size 16*16
     """
-    def __init__(self, means, stds, train = True):
+    def __init__(self, train = True):
         if train:
             self.transformations = A.Compose(
                 [
