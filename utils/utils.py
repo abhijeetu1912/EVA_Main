@@ -64,7 +64,7 @@ def denormalize_image(img, means = (0.5, 0.5, 0.5),
     return orig_img
 
 
-# show random images
+# save random images
 def show_random_images(data_loader, classes, num_images = 10):
     images, labels = next(iter(data_loader))
     fig = plt.figure(figsize = (5 * num_images // 5, 5))
@@ -77,7 +77,7 @@ def show_random_images(data_loader, classes, num_images = 10):
     plt.savefig('plots/training_images.png')
 
 
-# performance plots
+# save performance plots
 def show_performance_plots(train, test, epochs):
     fig, axs = plt.subplots(2,2,figsize=(10, 10))
 
@@ -139,7 +139,7 @@ def get_missclassified_records(model, data_loader, device):
     return images, labels, pred_labels
 
 
-# show miss classified images
+# save miss classified images
 def show_missclassified_images(images, labels, pred_labels, classes, num_images = 10):
     fig = plt.figure(figsize = (5 * num_images // 5, 5))
     for i in range(num_images):
