@@ -152,12 +152,12 @@ if __name__ == '__main__':
 
     # data loader
     train_data = torchvision.datasets.CIFAR10(root = './data', train = True, 
-                                         download = True, transform = Transforms(Train = True))
+                                         download = True, transform = Transforms(train = True))
     train_loader = DataLoader(train_data, batch_size = args.batch_size, 
                               shuffle = True, num_workers = 2)
 
     test_data = torchvision.datasets.CIFAR10(root = './data', train = False, 
-                                        download = True, transform = Transforms(Train = False))
+                                        download = True, transform = Transforms(train = False))
     test_loader = DataLoader(test_data, batch_size = args.batch_size, 
                              shuffle = False, num_workers = 2)
     classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
