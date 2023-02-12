@@ -217,8 +217,8 @@ if __name__ == '__main__':
     plot_gradcam(model, device, 'layer3.1.conv2', miss_images, miss_labels, classes, 
                  args.save_plots, num_images = 10, use_cuda = True, true_label = True)
 
-     # show grad cam output of miss classified images against predicted label
-     plot_gradcam(model, device, 'layer3.1.conv2', miss_images, miss_pred_labels, classes, 
+    # show grad cam output of miss classified images against predicted label
+    plot_gradcam(model, device, 'layer3.1.conv2', miss_images, miss_pred_labels, classes, 
                   args.save_plots, num_images = 10, use_cuda = True, true_label = False)
 
 
