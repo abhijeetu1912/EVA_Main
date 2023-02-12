@@ -190,7 +190,7 @@ if __name__ == '__main__':
 
     # model training
     for epoch in range(args.epochs):
-        print("EPOCH:", epoch, "  Learning Rate: ", scheduler.optimizer.param_groups[0]['lr'])
+        print("EPOCH:", epoch)
         train.train()
         test.test()
         if args.lr_scheduler:
