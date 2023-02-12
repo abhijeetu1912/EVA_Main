@@ -70,7 +70,6 @@ class Tester:
         self.device = device
         self.test_losses = []
         self.test_accs = []
-        self.split = split
 
     def test(self):
         #use model in evaluation mode
