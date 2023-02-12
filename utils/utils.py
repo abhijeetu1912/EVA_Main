@@ -178,5 +178,8 @@ def plot_gradcam(model, device, layer, images, labels, classes, folder, num_imag
         else:
            sub.set_title("Predicted: {}".format(classes[labels[i]]))
     plt.tight_layout()
-    plt.savefig(folder+'training_images.png')    
+    if true_label:
+        plt.savefig(folder+'gradcam_true_label.png')
+    else:
+        plt.savefig(folder+'gradcam_predicted_label.png')
 
