@@ -98,7 +98,7 @@ class Tester:
             self.test_accs.append(100 * correct / len(self.test_loader.dataset))
             # print epoch statistics
             print('\nTest set: Average loss: {:.5f}, Accuracy: {:.2f}\n'.format(
-                  self.test_losses[-1], correct, self.test_accs[-1]))
+                  self.test_losses[-1], self.test_accs[-1]))
 
 
 def evaluate(model, data_loader, criterion, device, split = 'Test'):
