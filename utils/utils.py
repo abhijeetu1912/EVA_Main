@@ -130,7 +130,7 @@ def get_missclassified_records(model, data_loader, device):
     with torch.no_grad():
          for data, target in data_loader:
             data, target = data.to(device), target.to(device)
-            preds = predict_label(data)                           # get the index of the max log-probability
+            preds = predict_label(model, data)                           # get the index of the max log-probability
             for i in range(len(target)):
                 if preds[i] != target[i]:
                    images.append(data[i])

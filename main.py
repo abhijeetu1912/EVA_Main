@@ -128,7 +128,7 @@ def evaluate(model, data_loader, criterion, device, split = 'Test'):
         accuracy = 100 * correct / len(data_loader.dataset)
         # print epoch statistics
         print('\n{} set: Average loss: {:.5f}, Accuracy: {:.2f}\n'.format(
-              split, loss, correct, accuracy))
+              split, loss, accuracy))
 
 
 if __name__ == '__main__':
@@ -197,7 +197,7 @@ if __name__ == '__main__':
             scheduler.step()
 
     # model evaluation
-    evaluate(model, train_loader, criterion, device, split = 'Test')
+    evaluate(model, train_loader, criterion, device, split = 'Train')
     evaluate(model, test_loader, criterion, device, split = 'Test')
 
     # show model performance plots
