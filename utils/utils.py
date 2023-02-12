@@ -6,13 +6,16 @@ import torch
 from torch import nn
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
+from pytorch_grad_cam import GradCAM
+from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
+from pytorch_grad_cam.utils.image import show_cam_on_image
 
 
 # device
 def get_device():
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda" if use_cuda else "cpu")
-    return device
+    return use_cuda, device
 
 
 # Data transformation/augmentation
@@ -122,7 +125,7 @@ def predict_label(model, images):
     return pred_labels
 
 # find miss classified examples
-def get_missclassified_records(model, data_loader, device):
+def get_missclassified_records(model, data_loader, device, num_images = 10):
     images = []
     labels = []
     pred_labels = []
@@ -136,7 +139,7 @@ def get_missclassified_records(model, data_loader, device):
                    images.append(data[i])
                    labels.append(target[i])
                    pred_labels.append(preds[i])
-    return images, labels, pred_labels
+    return images[:num_images], labels[:num_images], pred_labels[:num_images]
 
 
 # save miss classified images
@@ -149,4 +152,31 @@ def show_missclassified_images(images, labels, pred_labels, classes, folder, num
         sub.set_title("True: {} \nPredicted: {}".format(classes[labels[i]], classes[pred_labels[i]]))
     plt.tight_layout()
     plt.savefig(folder+'misclassified_images.png')
+
+
+# plot gradcxam heatmap with image
+def plot_gradcam(model, device, layer, images, labels, classes, folder, num_images = 10, use_cuda = True, true_label = True):
+    # layer to use for gradcam
+    target_layers = [get_module_by_name(model, layer)]
+    # grad cam object
+    cam = GradCAM(model=model, target_layers=target_layers, use_cuda=use_cuda)
+    # plot 10 gradcam images
+    fig = plt.figure(figsize = (5 * num_images // 5, 5))
+    for i in range(num_images):
+        # calculate gradcam output
+        input_tensor = images[i].unsqueeze(0).to(device)
+        targets = [ClassifierOutputTarget(labels[i])]
+        rgb_img = denormalize_image(images[i].cpu().numpy().squeeze())
+        grayscale_cam = cam(input_tensor=input_tensor, targets=targets)
+        grayscale_cam = grayscale_cam[0, :]
+        visualization = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True)
+        # add subplots
+        sub = fig.add_subplot(num_images // 5, 5, i + 1)
+        plt.imshow(visualization, cmap="gray")
+        if true_label:
+           sub.set_title("True: {}".format(classes[labels[i]]))
+        else:
+           sub.set_title("Predicted: {}".format(classes[labels[i]]))
+    plt.tight_layout()
+    plt.savefig(folder+'training_images.png')    
 

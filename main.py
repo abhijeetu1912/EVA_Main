@@ -6,11 +6,10 @@ import torchvision
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from torch.optim.lr_scheduler import StepLR, ReduceLROnPlateau, OneCycleLR
-from torchvision import datasets, transforms
-from torch.utils.data import Dataset, DataLoader
+from torch.optim.lr_scheduler import StepLR
+from torch.utils.data import DataLoader
 from torchsummary import summary
-from utils.utils import get_device, Transforms, denormalize_image, show_random_images, get_missclassified_records, show_missclassified_images, show_performance_plots
+from utils.utils import get_device, Transforms, show_random_images, get_missclassified_records, show_missclassified_images, show_performance_plots, plot_gradcam
 from models.resnet import ResNet18
 
 
@@ -142,7 +141,9 @@ if __name__ == '__main__':
     parser.add_argument('--step_size', default = 5, type = int, help = 'Step size for StepLR')
     parser.add_argument('--augmentation', default = False, type = bool, help = 'If data augmentation will be applied')
     parser.add_argument('--weight_decay', default = 0.1, type = float, help = 'L2 weight decay for regularization')
-    parser.add_argument('--save_plots', default = '/content/drive/MyDrive/EVA8/S7/Plots/', type = str, help = 'foldfer to save plots')
+    parser.add_argument('--save_plots', default = '/content/drive/MyDrive/EVA8/S7/Plots/', type = str, help = 'folder to save plots')
+    parser.add_argument('--num_images', default = '/content/drive/MyDrive/EVA8/S7/Plots/', type = str, help = 'number of images to plot')
+
 
     try:
         args = parser.parse_args()
@@ -163,10 +164,10 @@ if __name__ == '__main__':
     classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
     # plot example images
-    show_random_images(train_loader, classes, args.save_plots)
+    show_random_images(train_loader, classes, args.save_plots, num_images = args.num_images)
 
     # device
-    device = get_device()
+    use_cuda, device = get_device()
     print("Device being used: ", device)
 
     # initiate model
@@ -205,10 +206,21 @@ if __name__ == '__main__':
     show_performance_plots(train, test, args.epochs, args.save_plots)
 
     # get miss classified images, their truue labels and predicted labels
-    miss_images, miss_labels, miss_pred_labels = get_missclassified_records(model, test_loader, device)
+    miss_images, miss_labels, miss_pred_labels = get_missclassified_records(model, test_loader, 
+                                                                            device, args.num_images)
 
     # show miss classified images
-    show_missclassified_images(miss_images, miss_labels, miss_pred_labels, classes, args.save_plots, num_images = 10)
+    show_missclassified_images(miss_images, miss_labels, miss_pred_labels, classes, 
+                               args.save_plots, args.num_images)
+
+    # show grad cam output of miss classified images against true label
+    plot_gradcam(model, device, 'layer3.1.conv2', miss_images, miss_labels, classes, 
+                 args.save_plots, num_images = 10, use_cuda = True, true_label = True)
+
+     # show grad cam output of miss classified images against predicted label
+     plot_gradcam(model, device, 'layer3.1.conv2', miss_images, miss_pred_labels, classes, 
+                  args.save_plots, num_images = 10, use_cuda = True, true_label = False)
+
 
 
 
