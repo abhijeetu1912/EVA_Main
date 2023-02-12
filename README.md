@@ -10,16 +10,16 @@
 
 # How to Run
 
-!python main.py \
---epochs 20 \
---batch_size 64 \
---optimizer SGD \
---lr 1e-3 \
---momentum 0.9 \
---lr_scheduler True \
---step_size 5 \
---augmentation True \
---weight_decay 0.1 \
---save_plots /content/drive/MyDrive/EVA8/S7/Plots/ \
+!python main.py \ \
+--epochs 20 \ \
+--batch_size 64 \ \
+--optimizer SGD \ \
+--lr 1e-3 \ \
+--momentum 0.9 \ \
+--lr_scheduler True \ \
+--step_size 5 \ \
+--augmentation True \ \
+--weight_decay 0.1 \ \
+--save_plots /content/drive/MyDrive/EVA8/S7/Plots/ \ \
 --num_images 10
 
