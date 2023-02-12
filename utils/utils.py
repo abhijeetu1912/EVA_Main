@@ -74,7 +74,7 @@ def show_random_images(data_loader, classes, num_images = 10):
         plt.imshow(npimg, cmap="gray")
         sub.set_title("{}".format(classes[labels[i]]))
     plt.tight_layout()
-    plt.show()
+    plt.savefig('plots/training_images.png')
 
 
 # performance plots
@@ -102,7 +102,7 @@ def show_performance_plots(train, test, epochs):
     axs[1, 1].plot(range(epochs), test.test_accs)
 
     plt.tight_layout()
-    plt.show()
+    plt.savefig('plots/performance_plot.png')
 
 
 # Retrieve model layer
@@ -148,5 +148,5 @@ def show_missclassified_images(images, labels, pred_labels, classes, num_images 
         plt.imshow(npimg, cmap="gray")
         sub.set_title("True: {} \nPredicted: {}".format(classes[labels[i]], classes[pred_labels[i]]))
     plt.tight_layout()
-    plt.show()
+    plt.savefig('plots/misclassified_images.png')
 
