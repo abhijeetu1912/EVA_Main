@@ -142,7 +142,7 @@ if __name__ == '__main__':
     parser.add_argument('--augmentation', default = False, type = bool, help = 'If data augmentation will be applied')
     parser.add_argument('--weight_decay', default = 0.1, type = float, help = 'L2 weight decay for regularization')
     parser.add_argument('--save_plots', default = '/content/drive/MyDrive/EVA8/S7/Plots/', type = str, help = 'folder to save plots')
-    parser.add_argument('--num_images', default = '/content/drive/MyDrive/EVA8/S7/Plots/', type = str, help = 'number of images to plot')
+    parser.add_argument('--num_images', default = '/content/drive/MyDrive/EVA8/S7/Plots/', type = int, help = 'number of images to plot')
 
 
     try:
