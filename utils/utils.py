@@ -79,7 +79,7 @@ def show_random_images(data_loader, classes, num_images = 10):
 
 # save performance plots
 def show_performance_plots(train, test, epochs):
-    fig, axs = plt.subplots(2,2,figsize=(10, 10))
+    fig, axs = plt.subplots(2,2,figsize=(15, 7))
 
     axs[0, 0].set_xlabel('Epoch')
     axs[0, 0].set_ylabel('Loss')
