@@ -65,7 +65,7 @@ def denormalize_image(img, means = (0.5, 0.5, 0.5),
 
 
 # save random images
-def show_random_images(data_loader, classes, num_images = 10):
+def show_random_images(data_loader, classes, folder, num_images = 10):
     images, labels = next(iter(data_loader))
     fig = plt.figure(figsize = (5 * num_images // 5, 5))
     for i in range(num_images):
@@ -74,11 +74,11 @@ def show_random_images(data_loader, classes, num_images = 10):
         plt.imshow(npimg, cmap="gray")
         sub.set_title("{}".format(classes[labels[i]]))
     plt.tight_layout()
-    plt.savefig('plots/training_images.png')
+    plt.savefig(folder+'training_images.png')
 
 
 # save performance plots
-def show_performance_plots(train, test, epochs):
+def show_performance_plots(train, test, epochs, folder):
     fig, axs = plt.subplots(2,2,figsize=(15, 7))
 
     axs[0, 0].set_xlabel('Epoch')
@@ -102,7 +102,7 @@ def show_performance_plots(train, test, epochs):
     axs[1, 1].plot(range(epochs), test.test_accs)
 
     plt.tight_layout()
-    plt.savefig('plots/performance_plot.png')
+    plt.savefig(folder+'performance_plot.png')
 
 
 # Retrieve model layer
@@ -140,7 +140,7 @@ def get_missclassified_records(model, data_loader, device):
 
 
 # save miss classified images
-def show_missclassified_images(images, labels, pred_labels, classes, num_images = 10):
+def show_missclassified_images(images, labels, pred_labels, classes, folder, num_images = 10):
     fig = plt.figure(figsize = (5 * num_images // 5, 5))
     for i in range(num_images):
         sub = fig.add_subplot(num_images // 5, 5, i + 1)
@@ -148,5 +148,5 @@ def show_missclassified_images(images, labels, pred_labels, classes, num_images 
         plt.imshow(npimg, cmap="gray")
         sub.set_title("True: {} \nPredicted: {}".format(classes[labels[i]], classes[pred_labels[i]]))
     plt.tight_layout()
-    plt.savefig('plots/misclassified_images.png')
+    plt.savefig(folder+'misclassified_images.png')
 

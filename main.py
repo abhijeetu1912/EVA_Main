@@ -142,6 +142,7 @@ if __name__ == '__main__':
     parser.add_argument('--step_size', default = 5, type = int, help = 'Step size for StepLR')
     parser.add_argument('--augmentation', default = False, type = bool, help = 'If data augmentation will be applied')
     parser.add_argument('--weight_decay', default = 0.1, type = float, help = 'L2 weight decay for regularization')
+    parser.add_argument('--save_plots', default = '/content/drive/MyDrive/EVA8/S7/Plots/', type = str, help = 'foldfer to save plots')
 
     try:
         args = parser.parse_args()
@@ -162,7 +163,7 @@ if __name__ == '__main__':
     classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
     # plot example images
-    show_random_images(train_loader, classes)
+    show_random_images(train_loader, classes, args.save_plots)
 
     # device
     device = get_device()
@@ -201,13 +202,13 @@ if __name__ == '__main__':
     evaluate(model, test_loader, criterion, device, split = 'Test')
 
     # show model performance plots
-    show_performance_plots(train, test, args.epochs)
+    show_performance_plots(train, test, args.epochs, args.save_plots)
 
     # get miss classified images, their truue labels and predicted labels
     miss_images, miss_labels, miss_pred_labels = get_missclassified_records(model, test_loader, device)
 
     # show miss classified images
-    show_missclassified_images(miss_images, miss_labels, miss_pred_labels, classes, num_images = 10)
+    show_missclassified_images(miss_images, miss_labels, miss_pred_labels, classes, args.save_plots, num_images = 10)
 
 
 
