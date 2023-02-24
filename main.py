@@ -173,10 +173,6 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(0)
 
-    print(args.assignment_num)
-    print(args.lr_scheduler.lower())
-
-
     # choose transformation function
     if args.assignment_num == 7:
         transformations = Transforms
@@ -213,9 +209,9 @@ if __name__ == '__main__':
     # initiate model
     if args.assignment_num == 7:
         model = ResNet18().to(device)
-    if args.assignment_num == 8:
+    elif args.assignment_num == 8:
         model = CustomResNet().to(device)
-    if args.assignment_num == 9:
+    elif args.assignment_num == 9:
         model = Model_A9().to(device)
     else:
         model = ResNet18().to(device)
