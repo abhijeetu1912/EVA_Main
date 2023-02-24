@@ -164,7 +164,6 @@ if __name__ == '__main__':
     parser.add_argument('--save_plots', default = '/content/drive/MyDrive/EVA8/Plots/', type = str, help = 'folder to save plots')
     parser.add_argument('--num_images', default = 10, type = int, help = 'number of images to plot')
     parser.add_argument('--assignment_num', default = 7, type = int, help = 'Assignment number')
-    parser.add_argument('--gradcam_flag', default = True, type = bool, help = 'Whether GradCam should be applied or not')
     parser.add_argument('--gradcam_layer', default = 'layer3.1.conv2', type = str, help = 'Layer to bew used for GradCam should be applied or not')
 
 
@@ -173,7 +172,7 @@ if __name__ == '__main__':
     except:
         parser.print_help()
         sys.exit(0)
-    print(args.gradcam_flag, type(args.gradcam_flag))
+    print(args.gradcam_layer, type(args.gradcam_layer))
     # choose transformation function
     if args.assignment_num == 7:
         transformations = Transforms
@@ -287,7 +286,7 @@ if __name__ == '__main__':
                                args.save_plots, args.num_images)
 
     # grad cam
-    if args.gradcam_flag:
+    if args.gradcam_layer not in ["None", "none"]:
         # show grad cam output of miss classified images against true label
         plot_gradcam(model, device, args.gradcam_layer, miss_images, miss_labels, classes, 
                      args.save_plots, num_images = 10, use_cuda = True, true_label = True)
