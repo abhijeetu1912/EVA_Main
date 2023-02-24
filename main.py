@@ -157,14 +157,14 @@ if __name__ == '__main__':
     parser.add_argument('--boundary_factor', default = 0.5, type = float, help = 'Factor by which search space to limit LR range for LR Finder is reduced')
     parser.add_argument('--div_factor', default = 100, type = int, help = 'div factor for starting lr')
     parser.add_argument('--final_div_factor', default = 10000, type = int, help = 'div factor for min lr')
-    parser.add_argument('--epoch_pct_start', default = 5, type = int, help = 'epoch in which max lr should occur')
+    parser.add_argument('--pct_start', default = 5/24, type = int, help = 'epoch in which max lr should occur')
     parser.add_argument('--three_phase', default = False, type = bool, help = 'If three phase lr annhilation should be implemented')
     parser.add_argument('--augmentation', default = False, type = bool, help = 'If data augmentation will be applied')
     parser.add_argument('--weight_decay', default = 0.1, type = float, help = 'L2 weight decay for regularization')
     parser.add_argument('--save_plots', default = '/content/drive/MyDrive/EVA8/Plots/', type = str, help = 'folder to save plots')
     parser.add_argument('--num_images', default = 10, type = int, help = 'number of images to plot')
     parser.add_argument('--assignment_num', default = 7, type = int, help = 'Assignment number')
-    parser.add_argument('--grad_cam', default = True, type = bool, help = 'Whether GradCam should be applied or not')
+    parser.add_argument('--grad_cam', default = False, type = bool, help = 'Whether GradCam should be applied or not')
     parser.add_argument('--grad_cam_layer', default = 'layer3.1.conv2', type = str, help = 'Layer to bew used for GradCam should be applied or not')
 
 
@@ -249,7 +249,7 @@ if __name__ == '__main__':
                           boundary=args.boundary, boundary_factor=args.boundary_factor)
         print("\nMax LR given by LR Finder: {}\n".format(max_lr))                  
         scheduler = OneCycleLR(optimizer, max_lr = max_lr, steps_per_epoch = len(train_loader), 
-                               pct_start = args.epoch_pct_start/args.epochs, epochs = args.epochs, 
+                               pct_start = args.pct_start, epochs = args.epochs, 
                                div_factor = args.div_factor, final_div_factor = args.final_div_factor, 
                                three_phase = False, anneal_strategy = 'linear')
     else:
@@ -287,7 +287,7 @@ if __name__ == '__main__':
                                args.save_plots, args.num_images)
 
     # grad cam
-    if args.grad_cam == True:
+    if args.grad_cam:
         # show grad cam output of miss classified images against true label
         plot_gradcam(model, device, args.grad_cam_layer, miss_images, miss_labels, classes, 
                      args.save_plots, num_images = 10, use_cuda = True, true_label = True)
