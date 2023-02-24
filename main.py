@@ -255,7 +255,7 @@ if __name__ == '__main__':
         scheduler = None
 
     # intitiate trainer and tester instances
-    train = Trainer(model, train_loader, criterion, optimizer, device, scheduler)
+    train = Trainer(model, args, train_loader, criterion, optimizer, device, scheduler)
     test = Tester(model, test_loader, criterion, device)
 
     # model training
