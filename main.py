@@ -157,7 +157,7 @@ if __name__ == '__main__':
     parser.add_argument('--boundary_factor', default = 0.5, type = float, help = 'Factor by which search space to limit LR range for LR Finder is reduced')
     parser.add_argument('--div_factor', default = 100, type = int, help = 'div factor for starting lr')
     parser.add_argument('--final_div_factor', default = 10000, type = int, help = 'div factor for min lr')
-    parser.add_argument('--pct_start', default = 5/24, type = int, help = 'epoch in which max lr should occur')
+    parser.add_argument('--pct_start', default = 5/24, type = float, help = 'epoch in which max lr should occur')
     parser.add_argument('--three_phase', default = False, type = bool, help = 'If three phase lr annhilation should be implemented')
     parser.add_argument('--augmentation', default = False, type = bool, help = 'If data augmentation will be applied')
     parser.add_argument('--weight_decay', default = 0.1, type = float, help = 'L2 weight decay for regularization')
