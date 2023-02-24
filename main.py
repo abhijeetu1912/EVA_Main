@@ -241,7 +241,7 @@ if __name__ == '__main__':
     # lr scheduler
     if args.lr_scheduler.lower() in ("true", "steplr"):
         scheduler = StepLR(optimizer, step_size = args.step_size, gamma = 0.1)
-    if args.lr_scheduler.lower() == "onecyclelr":
+    elif args.lr_scheduler.lower() == "onecyclelr":
         # find max lr
         max_lr = lrFinder(model, train_loader_lr, optimizer, criterion, device, start_lr=0, 
                           end_lr=args.end_lr, num_iter=args.num_iter, trials=args.trials,
