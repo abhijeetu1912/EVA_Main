@@ -173,6 +173,9 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(0)
 
+    print(args.assignment_num)
+    print(args.lr_scheduler.lower())
+
 
     # choose transformation function
     if args.assignment_num == 7:

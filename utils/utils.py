@@ -38,18 +38,18 @@ class Transforms:
                         A.Sequential([
                             A.CoarseDropout(max_height = 16, max_width = 16, min_height = 16, 
                                             min_width = 16, min_holes = 1, max_holes = 1, 
-                                            fill_value = [15.7198, 15.4241, 14.2844], 
+                                            fill_value = [125.31, 122.95, 113.87], 
                                             always_apply = True),
                         ], p = 1)
                     ], p = 0.5), 
-                    A.Normalize(mean = (0.5, 0.5, 0.5), std = (0.5, 0.5, 0.5)),
+                    A.Normalize(mean = (0.4914, 0.4822, 0.4465), std = (0.2470, 0.2435, 0.2616)),
                     ToTensorV2(),
                 ]
             )
         else:
             self.transformations = A.Compose(
                 [
-                    A.Normalize(mean = (0.5, 0.5, 0.5), std = (0.5, 0.5, 0.5)),
+                    A.Normalize(mean = (0.4914, 0.4822, 0.4465), std = (0.2470, 0.2435, 0.2616)),
                     ToTensorV2(),
                 ]
             )
@@ -59,8 +59,8 @@ class Transforms:
 
 
 # de-normalize image back to normal
-def denormalize_image(img, means = (0.5, 0.5, 0.5), 
-                      stds = (0.5, 0.5, 0.5)):
+def denormalize_image(img, means = (0.4914, 0.4822, 0.4465), 
+                      stds = (0.2470, 0.2435, 0.2616)):
     img = img.astype(np.float32)
     for i in range(img.shape[0]):
         img[i] = (img[i] * stds[i]) + means[i]
