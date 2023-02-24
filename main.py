@@ -247,7 +247,7 @@ if __name__ == '__main__':
         max_lr = lrFinder(model, train_loader_lr, optimizer, criterion, device, start_lr=0, 
                           end_lr=args.end_lr, num_iter=args.num_iter, trials=args.trials,
                           boundary=args.boundary, boundary_factor=args.boundary_factor)
-        print("Max LR given by LR Finder: ", max_lr)                  
+        print("\nMax LR given by LR Finder: {}\n".format(max_lr))                  
         scheduler = OneCycleLR(optimizer, max_lr = max_lr, steps_per_epoch = len(train_loader), 
                                pct_start = args.epoch_pct_start/args.epochs, epochs = args.epochs, 
                                div_factor = args.div_factor, final_div_factor = args.final_div_factor, 

@@ -242,6 +242,6 @@ def lr_plot(lr_tracker, folder):
     axs.set_xlabel('Num Iterations')
     axs.set_ylabel('Learning Rate')
     axs.set_title("Learning Rate Scedule")
-    axs.plot(idx, lr)
+    axs.plot(idx, lr_tracker)
     plt.tight_layout()
     plt.savefig(folder+'one_cycle_lr_plot.png')
