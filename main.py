@@ -185,17 +185,17 @@ if __name__ == '__main__':
     # data loader
     if args.lr_scheduler.lower() == "onecyclelr":
        train_data_lr = torchvision.datasets.CIFAR10(root = './data', train = True, 
-                                   download = True, transform = Transforms(train = False))
+                                   download = True, transform = transformations(train = False))
        train_loader_lr = DataLoader(train_data_lr, batch_size = args.batch_size, 
                                     shuffle = True, num_workers = 2)
 
     train_data = torchvision.datasets.CIFAR10(root = './data', train = True, 
-                             download = True, transform = Transforms(train = args.augmentation))
+                             download = True, transform = transformations(train = args.augmentation))
     train_loader = DataLoader(train_data, batch_size = args.batch_size, 
                               shuffle = True, num_workers = 2)
 
     test_data = torchvision.datasets.CIFAR10(root = './data', train = False, 
-                                        download = True, transform = Transforms(train = False))
+                                        download = True, transform = transformations(train = False))
     test_loader = DataLoader(test_data, batch_size = args.batch_size, 
                              shuffle = False, num_workers = 2)
     classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
