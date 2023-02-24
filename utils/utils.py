@@ -189,14 +189,12 @@ def lrFinder(model, train_loader, optimizer, criterion, device, start_lr=0,
               end_lr=4, num_iter=200, trials=5, boundary=2, boundary_factor=0.5):
     try:
         for i in range(trials):
-            print(i, start_lr, end_lr)
             lr_finder = LRFinder(model, optimizer, criterion, device)
             lr_finder.range_test(train_loader= train_loader, start_lr= start_lr, end_lr=end_lr, num_iter=200)
             lr_finder.reset()
 
             min_loss = min(lr_finder.history['loss'])
             ler_rate = lr_finder.history['lr'][np.argmin(lr_finder.history['loss'], axis=0)]
-            print(ler_rate)
         
             if i != (trials-1):
                start_lr = max(0.0, ler_rate - boundary)
