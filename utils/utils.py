@@ -9,6 +9,7 @@ from albumentations.pytorch import ToTensorV2
 from pytorch_grad_cam import GradCAM
 from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
 from pytorch_grad_cam.utils.image import show_cam_on_image
+from torch_lr_finder import LRFinder
 
 
 # device
@@ -183,3 +184,65 @@ def plot_gradcam(model, device, layer, images, labels, classes, folder, num_imag
     else:
         plt.savefig(folder+'gradcam_predicted_label.png')
 
+# LR finder for one cycle policy
+def lrFinder(model, train_loader, optimizer, criterion, device, start_lr=0, 
+              end_lr=4, num_iter=200, trials=5, boundary=2, boundary_factor=0.5):
+    try:
+        for i in range(trials):
+            print(i, start_lr, end_lr)
+            lr_finder = LRFinder(model, optimizer, criterion, device)
+            lr_finder.range_test(train_loader= train_loader, start_lr= start_lr, end_lr=end_lr, num_iter=200)
+            lr_finder.reset()
+
+            min_loss = min(lr_finder.history['loss'])
+            ler_rate = lr_finder.history['lr'][np.argmin(lr_finder.history['loss'], axis=0)]
+            print(ler_rate)
+        
+            if i != (trials-1):
+               start_lr = max(0.0, ler_rate - boundary)
+               end_lr = ler_rate + boundary
+               boundary *= boundary_factor
+    except:
+        lr_finder.reset()
+    lr_finder.reset()
+    return ler_rate 
+
+
+# data augmentation for assignment 8
+class Transforms_A8:
+    def __init__(self, train=True):
+        if train:
+            self.transformations = A.Compose(
+                [
+                    A.Sequential([
+                        A.PadIfNeeded(min_height = 32 + 2*4, min_width = 32 + 2*4, always_apply = True), 
+                        A.RandomCrop(height = 32, width = 32, always_apply = True),
+                        ], p = 0.5),
+                    A.HorizontalFlip(p = 0.5), 
+                    A.CoarseDropout(max_height = 8, max_width = 8, min_height = 8, min_width = 8, 
+                                    min_holes = 1, max_holes = 1, fill_value = [125.31, 122.95, 113.87], p = 0.5),
+                    A.Normalize(mean = (0.4914, 0.4822, 0.4465), std = (0.2470, 0.2435, 0.2616)),
+                    ToTensorV2(),
+                ]
+            )
+        else:
+            self.transformations = A.Compose(
+                [
+                    A.Normalize(mean = (0.4914, 0.4822, 0.4465), std = (0.2470, 0.2435, 0.2616)),
+                    ToTensorV2(),
+                ]
+            )
+
+    def __call__(self, img):
+        return self.transformations(image = np.array(img))["image"]
+
+
+# one ccyle lr plot
+def lr_plot(lr_tracker, folder):
+    idx = [x for x in range(len(lr_tracker))]
+    plt.plot(idx, lr_tracker)
+    plt.title("Learning Rate vs Iterations")
+    plt.xlabel("Number of Iterations")
+    plt.ylabel("Learning Rate")
+    plt.tight_layout()
+    plt.savefig(folder+'one_cycle_lr_plot.png')

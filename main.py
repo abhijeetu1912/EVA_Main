@@ -6,15 +6,15 @@ import torchvision
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from torch.optim.lr_scheduler import StepLR
+from torch.optim.lr_scheduler import StepLR, OneCycleLR
 from torch.utils.data import DataLoader
 from torchsummary import summary
-from utils.utils import get_device, Transforms, show_random_images, get_missclassified_records, show_missclassified_images, show_performance_plots, plot_gradcam
+from utils.utils import get_device, Transforms, Transforms_A8, show_random_images, get_missclassified_records, show_missclassified_images, show_performance_plots, plot_gradcam, lrFinder, lr_plot
 from models.resnet import ResNet18
 
 
 class Trainer:
-    def __init__(self, model, train_loader, criterion, optimizer, device):
+    def __init__(self, args, model, train_loader, criterion, optimizer, device, scheduler):
         self.model = model
         self.train_loader = train_loader
         self.criterion = criterion
@@ -22,6 +22,9 @@ class Trainer:
         self.device = device
         self.train_losses = []
         self.train_accs = []
+        self.scheduler = scheduler
+        if args.lr_scheduler.lower() == "onecyclelr":
+           self.lr_tracker = []
 
     def train(self):
         # use model in training mode
@@ -59,6 +62,11 @@ class Trainer:
             pbar.set_description(
                 desc=f"Loss = {loss.item():3.2f} | Batch = {batch_id} | Accuracy = {self.train_accs[-1]:0.2f}"
             )
+            # scheduler step
+            if args.lr_scheduler.lower() == "onecyclelr":
+               self.scheduler.step()
+               # track learning rate
+               self.lr_tracker.append(self.scheduler.optimizer.param_groups[0]['lr'])
 
 
 class Tester:
@@ -137,12 +145,24 @@ if __name__ == '__main__':
     parser.add_argument('--optimizer', default = 'SGD', type = str, help = 'Batch size')
     parser.add_argument('--lr', default = 1e-3, type = float, help = 'Learning rate')
     parser.add_argument('--momentum', default = 0.9, type = float, help = 'Momentum')
-    parser.add_argument('--lr_scheduler', default = False, type = bool, help = 'If lr scheduler needs to be used')
+    parser.add_argument('--lr_scheduler', default = 'StepLR', type = str, help = 'Which LR scheduler needs to be used')
     parser.add_argument('--step_size', default = 5, type = int, help = 'Step size for StepLR')
+    parser.add_argument('--end_lr', default = 4, type = int, help = 'End LR for LR Finder')
+    parser.add_argument('--num_iter', default = 200, type = int, help = 'Number of iterations for LR Finder')
+    parser.add_argument('--trials', default = 5, type = int, help = 'Number of trials for LR Finder')
+    parser.add_argument('--boundary', default = 4, type = int, help = 'Search space to limit LR range for LR Finder')
+    parser.add_argument('--boundary_factor', default = 0.5, type = float, help = 'Factor by which search space to limit LR range for LR Finder is reduced')
+    parser.add_argument('--div_factor', default = 100, type = int, help = 'div factor for starting lr')
+    parser.add_argument('--final_div_factor', default = 10000, type = int, help = 'div factor for min lr')
+    parser.add_argument('--epoch_pct_start', default = 5, type = int, help = 'epoch in which max lr should occur')
+    parser.add_argument('--three_phase', default = False, type = bool, help = 'If three phase lr annhilation should be implemented')
     parser.add_argument('--augmentation', default = False, type = bool, help = 'If data augmentation will be applied')
     parser.add_argument('--weight_decay', default = 0.1, type = float, help = 'L2 weight decay for regularization')
-    parser.add_argument('--save_plots', default = '/content/drive/MyDrive/EVA8/S7/Plots/', type = str, help = 'folder to save plots')
+    parser.add_argument('--save_plots', default = '/content/drive/MyDrive/EVA8/Plots/', type = str, help = 'folder to save plots')
     parser.add_argument('--num_images', default = 10, type = int, help = 'number of images to plot')
+    parser.add_argument('--assignment_num', default = 9, type = int, help = 'Assignment number')
+    parser.add_argument('--grad_cam', default = True, type = bool, help = 'Whether GradCam should be applied or not')
+    parser.add_argument('--grad_cam_layer', default = 'layer3.1.conv2', type = str, help = 'Layer to bew used for GradCam should be applied or not')
 
 
     try:
@@ -151,7 +171,22 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(0)
 
+
+    # choose transformation function
+    if args.assignment_num == 7:
+        transformations = Transforms
+    if args.assignment_num == 9:
+        transformations = Transforms_A8
+    else:
+        transformations = Transforms
+
     # data loader
+    if args.lr_scheduler.lower() == "onecyclelr":
+       train_data_lr = torchvision.datasets.CIFAR10(root = './data', train = True, 
+                             download = True, transform = Transforms(train = False))
+       train_loader_lr = DataLoader(train_data_lr, batch_size = args.batch_size, 
+                              shuffle = True, num_workers = 2)
+
     train_data = torchvision.datasets.CIFAR10(root = './data', train = True, 
                              download = True, transform = Transforms(train = args.augmentation))
     train_loader = DataLoader(train_data, batch_size = args.batch_size, 
@@ -180,14 +215,38 @@ if __name__ == '__main__':
     criterion = nn.CrossEntropyLoss()
 
     # optimizer
-    optimizer = optim.SGD(model.parameters(), lr = args.lr, momentum = args.momentum, weight_decay = args.weight_decay)
-    
+    if args.optimizer.lower() == 'sgd':
+       optimizer = optim.SGD(model.parameters(), lr = args.lr, momentum = args.momentum, weight_decay = args.weight_decay)
+       print("Using SGD Optimiser")
+    elif args.optimizer.lower() == 'adam':
+       optimizer = optim.Adam(model.parameters(), lr = args.lr, weight_decay = args.weight_decay)
+       print("Using Adam Optimiser")
+    elif args.optimizer.lower() == 'rmsprop': 
+       optimizer = optim.RMSprop(model.parameters(), lr = args.lr, weight_decay = args.weight_decay)
+       print("Using RMSProp Optimiser")
+    else:
+       optimizer = optim.SGD(model.parameters(), lr = args.lr, momentum = args.momentum, weight_decay = args.weight_decay)
+       print("Using SGD Optimiser by default !!!")
+       
+
+
     # lr scheduler
-    if args.lr_scheduler:
+    if args.lr_scheduler.lower() in ("true", "steplr"):
         scheduler = StepLR(optimizer, step_size = args.step_size, gamma = 0.1)
+    if args.lr_scheduler.lower() == "onecyclelr":
+        # find max lr
+        max_lr = lrFinder(model, train_loader_lr, optimizer, criterion, start_lr=0, 
+                          end_lr=args.end_lr, num_iter=args.num_iter, trials=args.trials,
+                          boundary=args.boundary, boundary_factor=args.boundary_factor)
+        scheduler = OneCycleLR(optimizer, max_lr = max_lr, steps_per_epoch = len(train_loader), 
+                               pct_start = args.epoch_pct_start/args.epochs, epochs = args.epochs, 
+                               div_factor = args.div_factor, final_div_factor = args.final_div_factor, 
+                               three_phase = False, anneal_strategy = 'linear')
+    else:
+        scheduler = None
 
     # intitiate trainer and tester instances
-    train = Trainer(model, train_loader, criterion, optimizer, device)
+    train = Trainer(model, train_loader, criterion, optimizer, device, scheduler)
     test = Tester(model, test_loader, criterion, device)
 
     # model training
@@ -195,12 +254,16 @@ if __name__ == '__main__':
         print("EPOCH:", epoch)
         train.train()
         test.test()
-        if args.lr_scheduler:
+        if args.lr_scheduler.lower() == "steplr":
             scheduler.step()
 
     # model evaluation
     evaluate(model, train_loader, criterion, device, split = 'Train')
     evaluate(model, test_loader, criterion, device, split = 'Test')
+
+    # show lr plot for one cycle policy
+    if args.lr_scheduler.lower() == "onecyclelr":
+       lr_plot(train.lr_tracker, args.save_plots)
 
     # show model performance plots
     show_performance_plots(train, test, args.epochs, args.save_plots)
@@ -213,13 +276,15 @@ if __name__ == '__main__':
     show_missclassified_images(miss_images, miss_labels, miss_pred_labels, classes, 
                                args.save_plots, args.num_images)
 
-    # show grad cam output of miss classified images against true label
-    plot_gradcam(model, device, 'layer3.1.conv2', miss_images, miss_labels, classes, 
-                 args.save_plots, num_images = 10, use_cuda = True, true_label = True)
+    # grad cam
+    if args.grad_cam:
+        # show grad cam output of miss classified images against true label
+        plot_gradcam(model, device, args.grad_cam_layer, miss_images, miss_labels, classes, 
+                     args.save_plots, num_images = 10, use_cuda = True, true_label = True)
 
-    # show grad cam output of miss classified images against predicted label
-    plot_gradcam(model, device, 'layer3.1.conv2', miss_images, miss_pred_labels, classes, 
-                  args.save_plots, num_images = 10, use_cuda = True, true_label = False)
+        # show grad cam output of miss classified images against predicted label
+        plot_gradcam(model, device, args.grad_cam_layer, miss_images, miss_pred_labels, classes, 
+                     args.save_plots, num_images = 10, use_cuda = True, true_label = False)
 
 
 
