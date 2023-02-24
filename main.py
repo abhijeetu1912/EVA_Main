@@ -11,6 +11,8 @@ from torch.utils.data import DataLoader
 from torchsummary import summary
 from utils.utils import get_device, Transforms, Transforms_A8, show_random_images, get_missclassified_records, show_missclassified_images, show_performance_plots, plot_gradcam, lrFinder, lr_plot
 from models.resnet import ResNet18
+from models.custom_resnet import CustomResNet
+from models.model_a9 import Model_A9
 
 
 class Trainer:
@@ -160,7 +162,7 @@ if __name__ == '__main__':
     parser.add_argument('--weight_decay', default = 0.1, type = float, help = 'L2 weight decay for regularization')
     parser.add_argument('--save_plots', default = '/content/drive/MyDrive/EVA8/Plots/', type = str, help = 'folder to save plots')
     parser.add_argument('--num_images', default = 10, type = int, help = 'number of images to plot')
-    parser.add_argument('--assignment_num', default = 9, type = int, help = 'Assignment number')
+    parser.add_argument('--assignment_num', default = 7, type = int, help = 'Assignment number')
     parser.add_argument('--grad_cam', default = True, type = bool, help = 'Whether GradCam should be applied or not')
     parser.add_argument('--grad_cam_layer', default = 'layer3.1.conv2', type = str, help = 'Layer to bew used for GradCam should be applied or not')
 
@@ -175,10 +177,10 @@ if __name__ == '__main__':
     # choose transformation function
     if args.assignment_num == 7:
         transformations = Transforms
-    if args.assignment_num == 9:
+    if args.assignment_num == 8:
         transformations = Transforms_A8
     else:
-        transformations = Transforms
+        transformations = Transforms_A8
 
     # data loader
     if args.lr_scheduler.lower() == "onecyclelr":
@@ -207,6 +209,15 @@ if __name__ == '__main__':
 
     # initiate model
     model = ResNet18().to(device)
+
+    if args.assignment_num == 7:
+        model = ResNet18().to(device)
+    if args.assignment_num == 8:
+        model = CustomResNet().to(device)
+    if args.assignment_num == 9:
+        model = Model_A9().to(device)
+    else:
+        model = ResNet18().to(device)
 
     # print model summary
     print(summary(model, input_size=(3, 32, 32)))
