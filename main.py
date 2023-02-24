@@ -25,7 +25,8 @@ class Trainer:
         self.train_losses = []
         self.train_accs = []
         self.scheduler = scheduler
-        if args.lr_scheduler.lower() == "onecyclelr":
+        self.lr_scheduler_flag = args.lr_scheduler.lower()
+        if self.lr_scheduler_flag == "onecyclelr":
            self.lr_tracker = []
 
     def train(self):
@@ -65,7 +66,7 @@ class Trainer:
                 desc=f"Loss = {loss.item():3.2f} | Batch = {batch_id} | Accuracy = {self.train_accs[-1]:0.2f}"
             )
             # scheduler step
-            if args.lr_scheduler.lower() == "onecyclelr":
+            if self.lr_scheduler_flag == "onecyclelr":
                self.scheduler.step()
                # track learning rate
                self.lr_tracker.append(self.scheduler.optimizer.param_groups[0]['lr'])
@@ -255,7 +256,7 @@ if __name__ == '__main__':
         scheduler = None
 
     # intitiate trainer and tester instances
-    train = Trainer(model, args, train_loader, criterion, optimizer, device, scheduler)
+    train = Trainer(args, model, train_loader, criterion, optimizer, device, scheduler)
     test = Tester(model, test_loader, criterion, device)
 
     # model training
