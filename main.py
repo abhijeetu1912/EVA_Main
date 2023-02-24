@@ -208,8 +208,6 @@ if __name__ == '__main__':
     print("Device being used: ", device)
 
     # initiate model
-    model = ResNet18().to(device)
-
     if args.assignment_num == 7:
         model = ResNet18().to(device)
     if args.assignment_num == 8:
