@@ -183,11 +183,10 @@ if __name__ == '__main__':
         transformations = Transforms_A8
 
     # data loader
-    if args.lr_scheduler.lower() == "onecyclelr":
-       train_data_lr = torchvision.datasets.CIFAR10(root = './data', train = True, 
-                             download = True, transform = Transforms(train = False))
-       train_loader_lr = DataLoader(train_data_lr, batch_size = args.batch_size, 
-                              shuffle = True, num_workers = 2)
+    train_data_lr = torchvision.datasets.CIFAR10(root = './data', train = True, 
+                                download = True, transform = Transforms(train = False))
+    train_loader_lr = DataLoader(train_data_lr, batch_size = args.batch_size, 
+                                shuffle = True, num_workers = 2)
 
     train_data = torchvision.datasets.CIFAR10(root = './data', train = True, 
                              download = True, transform = Transforms(train = args.augmentation))
@@ -246,7 +245,7 @@ if __name__ == '__main__':
         scheduler = StepLR(optimizer, step_size = args.step_size, gamma = 0.1)
     if args.lr_scheduler.lower() == "onecyclelr":
         # find max lr
-        max_lr = lrFinder(model, train_loader_lr, optimizer, criterion, start_lr=0, 
+        max_lr = lrFinder(model, train_loader_lr, optimizer, criterion, device, start_lr=0, 
                           end_lr=args.end_lr, num_iter=args.num_iter, trials=args.trials,
                           boundary=args.boundary, boundary_factor=args.boundary_factor)
         scheduler = OneCycleLR(optimizer, max_lr = max_lr, steps_per_epoch = len(train_loader), 
