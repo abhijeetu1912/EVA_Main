@@ -172,7 +172,7 @@ if __name__ == '__main__':
     except:
         parser.print_help()
         sys.exit(0)
-    print(args.gradcam_layer, type(args.gradcam_layer))
+    
     # choose transformation function
     if args.assignment_num == 7:
         transformations = Transforms
