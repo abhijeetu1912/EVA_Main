@@ -238,9 +238,10 @@ class Transforms_A8:
 # one ccyle lr plot
 def lr_plot(lr_tracker, folder):
     idx = [x for x in range(len(lr_tracker))]
-    plt.plot(idx, lr_tracker)
-    plt.title("Learning Rate vs Iterations")
-    plt.xlabel("Number of Iterations")
-    plt.ylabel("Learning Rate")
+    fig, axs = plt.subplots(1, 1, figsize = (5, 4))
+    axs.set_xlabel('Num Iterations')
+    axs.set_ylabel('Learning Rate')
+    axs.set_title("Learning Rate Scedule")
+    axs.plot(idx, lr)
     plt.tight_layout()
     plt.savefig(folder+'one_cycle_lr_plot.png')

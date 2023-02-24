@@ -173,7 +173,7 @@ if __name__ == '__main__':
     except:
         parser.print_help()
         sys.exit(0)
-
+    print(args.grad_cam, type(args.grad_cam))
     # choose transformation function
     if args.assignment_num == 7:
         transformations = Transforms
@@ -287,7 +287,7 @@ if __name__ == '__main__':
                                args.save_plots, args.num_images)
 
     # grad cam
-    if args.grad_cam:
+    if args.grad_cam == True:
         # show grad cam output of miss classified images against true label
         plot_gradcam(model, device, args.grad_cam_layer, miss_images, miss_labels, classes, 
                      args.save_plots, num_images = 10, use_cuda = True, true_label = True)
